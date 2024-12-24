@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: AIDemo1
+
+langchain4j:
+  open-ai:
+    chat-model:
+      # demo key has restrictions, it is provided by langchain4j https://docs.langchain4j.dev/get-started/
+      api-key: demo
+      model-name: gpt-4o-mini
+      log-requests: true
+      log-responses: true
+
+
+logging:
+  level:
+    root: INFO
+    com.github.billygk.AIDemo1: DEBUG
+    dev.langchain4j: DEBUG
+    dev.ai4j.openai4j: DEBUG
