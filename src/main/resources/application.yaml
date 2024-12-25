@@ -16,5 +16,5 @@ logging:
   level:
     root: INFO
     com.github.billygk.AIDemo1: DEBUG
-    dev.langchain4j: DEBUG
-    dev.ai4j.openai4j: DEBUG
+#    dev.langchain4j: DEBUG
+#    dev.ai4j.openai4j: DEBUG

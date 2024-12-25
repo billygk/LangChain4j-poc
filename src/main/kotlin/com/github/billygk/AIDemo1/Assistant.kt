@@ -10,8 +10,10 @@ import dev.langchain4j.service.V
 import dev.langchain4j.service.spring.AiService
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
+import reactor.core.publisher.Mono
 
 @AiService
 interface Assistant {
@@ -29,21 +31,25 @@ interface Assistant {
     --> AI Tools definitions, methods model can call to perform some action.
  */
 @Component
-class AITools {
+class AITools(private val weatherService: WeatherService) {
 
     private val logger = org.slf4j.LoggerFactory.getLogger(AITools::class.java)
 
     @Tool("Returns the weather forecast for a given city")
-    fun weatherForecast(city: String, localDateTime: LocalDateTime): Int {
+    fun weatherForecast(city: String, localDateTime: LocalDateTime): Double {
         logger.info("--> Getting weather forecast for $localDateTime --> $city")
         // simulating api call to public weather service return random temperature between -10 and 40
-        return (-10..40).random()
+        val temperature = weatherService.getTemperature(city)
+        logger.info("<-- Weather forecast for $localDateTime --> $city: $temperature")
+        return temperature
     }
 
 }
 
 @RestController
-class AiController(private val assistant: Assistant) {
+class AiController(
+    private val assistant: Assistant,
+    private val weatherService: WeatherService) {
 
     @GetMapping("/softwareEngineer")
     fun index(): String {
@@ -68,7 +74,7 @@ class AiController(private val assistant: Assistant) {
     }
 
     @GetMapping("/useToolsSample")
-    fun useToolsSample(): String {
+    fun useToolsSample(@RequestParam paramQuestion: String? = null): String {
         val model : ChatLanguageModel = OpenAiChatModel.builder()
             .apiKey("demo")
             .modelName("gpt-4o-mini")
@@ -77,13 +83,27 @@ class AiController(private val assistant: Assistant) {
             .build()
 
         val aiService = AiServices.builder(Assistant::class.java)
-            .tools(AITools())
+            .tools(AITools(weatherService))
             .chatLanguageModel(model)
             .build()
 
-        val question = "We need the weather temperature for tuesday at noon in New York"
+        val question = paramQuestion ?: "We need the weather temperature for tuesday at noon in New York"
         val response = aiService.customerService(question)
         return """{"question":"$question","response":"$response"}"""
     }
+
+    @GetMapping("/weather", produces = ["json/plain"])
+    fun getWeather(@RequestParam("city") city: String): Mono<String> {
+        return weatherService.getWeather(city)
+            .onErrorResume { ex ->
+                when (ex) {
+                    is CityNotFoundException,
+                    is InvalidApiKeyException,
+                    is WeatherServiceException -> Mono.just("Error: ${ex.message}")
+                    else -> Mono.error(ex)
+                }
+            }
+    }
+
 
 }
