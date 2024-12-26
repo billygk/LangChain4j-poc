@@ -2,6 +2,7 @@ package com.github.billygk.AIDemo1
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -13,6 +14,7 @@ class WeatherService(private val webClient: WebClient) {
 
     private val logger = org.slf4j.LoggerFactory.getLogger(WeatherService::class.java)
 
+    @Value("\${openweathermap.api-key}")
     private val apiKey = "" // Replace with your actual API key
     private val baseUrl = "http://api.openweathermap.org/data/2.5/weather"
 
