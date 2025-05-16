@@ -2,6 +2,10 @@ spring:
   application:
     name: AIDemo1
 
+  threads:
+    virtual:
+      enabled: true
+
 openweathermap:
   api-key: fb70... # get your own key from https://home.openweathermap.org/users/sign_up
 
@@ -9,6 +13,7 @@ langchain4j:
   open-ai:
     chat-model:
       # demo key has restrictions, it is provided by langchain4j https://docs.langchain4j.dev/get-started/
+      base-url: http://langchain4j.dev/demo/openai/v1
       api-key: demo
       model-name: gpt-4o-mini
       log-requests: true

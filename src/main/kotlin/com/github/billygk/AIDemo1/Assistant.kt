@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
-import reactor.core.publisher.Mono
 
 @AiService
 interface Assistant {
@@ -93,16 +92,8 @@ class AiController(
     }
 
     @GetMapping("/weather", produces = ["json/plain"])
-    fun getWeather(@RequestParam("city") city: String): Mono<String> {
+    fun getWeather(@RequestParam("city") city: String): String {
         return weatherService.getWeather(city)
-            .onErrorResume { ex ->
-                when (ex) {
-                    is CityNotFoundException,
-                    is InvalidApiKeyException,
-                    is WeatherServiceException -> Mono.just("Error: ${ex.message}")
-                    else -> Mono.error(ex)
-                }
-            }
     }
 
 
