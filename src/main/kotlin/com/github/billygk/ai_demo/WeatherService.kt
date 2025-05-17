@@ -101,10 +101,12 @@ class WeatherService(
             }
             return tempNode.asDouble()
         } catch (e: com.fasterxml.jackson.core.JsonProcessingException) {
-            logger.error("Error parsing weather JSON for city '$city': ${e.message}.", e)
+            logger.error("Error parsing weather JSON for city '$city': ", e)
             throw WeatherServiceException("Error parsing weather data for city '$city'.")
+        } catch (e: WeatherServiceException) {
+            throw e
         } catch (e: Exception) { // Catch any other unexpected error during parsing
-            logger.error("Unexpected error processing temperature for city '$city'. Error: ${e.message}", e)
+            logger.error("Unexpected error processing temperature for city '$city': ", e)
             throw WeatherServiceException("Unexpected error processing temperature for city '$city'.")
         }
     }
