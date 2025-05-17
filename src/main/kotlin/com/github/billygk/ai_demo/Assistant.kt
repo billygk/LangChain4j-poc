@@ -1,4 +1,4 @@
-package com.github.billygk.AIDemo1
+package com.github.billygk.ai_demo
 
 import dev.langchain4j.agent.tool.Tool
 import dev.langchain4j.model.chat.ChatLanguageModel
@@ -93,7 +93,7 @@ class AiController(
 
     @GetMapping("/weather", produces = ["json/plain"])
     fun getWeather(@RequestParam("city") city: String): String {
-        return weatherService.getWeather(city)
+        return weatherService.getWeather(city).toString()
     }
 
 

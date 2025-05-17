@@ -1,4 +1,4 @@
-package com.github.billygk.AIDemo1
+package com.github.billygk.ai_demo
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,4 +1,4 @@
-package com.github.billygk.AIDemo1
+package com.github.billygk.ai_demo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
