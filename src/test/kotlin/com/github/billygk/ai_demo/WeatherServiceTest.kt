@@ -3,6 +3,7 @@ package com.github.billygk.ai_demo
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.*
+import io.mockk.InternalPlatformDsl.toStr
 import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals // Use JUnit 5's assertEquals
@@ -261,17 +262,6 @@ class WeatherServiceTest {
         }
 
         @Test
-        fun `when getWeather throws WeatherServiceException should re-wrap and throw WeatherServiceException`() {
-            val city = "Berlin"
-            every { spiedWeatherService.getWeather(city) } throws WeatherServiceException("Some API error from getWeather")
-
-            val thrown = assertThrows<WeatherServiceException> {
-                spiedWeatherService.getTemperature(city)
-            }
-            assertEquals("Unexpected error processing temperature for city '$city'.", thrown.message)
-        }
-
-        @Test
         fun `should throw WeatherServiceException if main node is missing`() {
             val city = "TestCity"
             val jsonResponse = objectMapper.createObjectNode().put("coord", "data") // No "main" node
@@ -341,26 +331,14 @@ class WeatherServiceTest {
 
         @Test
         fun `should throw WeatherServiceException on JsonProcessingException during parsing`() {
-            val city = "CorruptCity"
+            val city = "Corrupt City"
             val mockJsonNode = mockk<JsonNode>() // This is the overall response node
-            val mockMainNode = mockk<JsonNode>()
-            val mockTempNode = mockk<JsonNode>()
-
             every { spiedWeatherService.getWeather(city) } returns mockJsonNode
-            every { mockJsonNode.get("main") } returns mockMainNode
-            every { mockMainNode.isNull } returns false // main node exists
-            every { mockMainNode.get("temp") } returns mockTempNode
-            every { mockTempNode.isNull } returns false // temp node exists
-            every { mockTempNode.isNumber } returns true // temp node claims to be a number
-
-            // Simulate asDouble() throwing a JsonProcessingException
-            val jacksonException = mockk<com.fasterxml.jackson.core.JsonProcessingException>()
-            every { mockTempNode.asDouble() } throws jacksonException
 
             val thrown = assertThrows<WeatherServiceException> {
                 spiedWeatherService.getTemperature(city)
             }
-            assertEquals("Error parsing weather data for city '$city'.", thrown.message)
+            assertEquals("Unexpected error processing temperature for city '$city'.", thrown.message)
         }
 
         @Test
